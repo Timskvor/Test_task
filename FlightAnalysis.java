@@ -2,14 +2,16 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.*;
+import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FlightAnalysis {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy H:mm");
+
     public static void main(String[] args) throws IOException, ParseException {
         JSONArray tickets = getJsonArray();
 
@@ -59,15 +61,8 @@ public class FlightAnalysis {
     }
 
     private static int calculateFlightDuration(JSONObject ticket) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
-        LocalTime departure = LocalTime.parse(
-                (String) ticket.get("departure_time"),
-                formatter
-        );
-        LocalTime arrival = LocalTime.parse(
-                (String) ticket.get("arrival_time"),
-                formatter
-        );
+        LocalDateTime departure = LocalDateTime.parse(ticket.get("departure_date") + " " + ticket.get("departure_time"), DATE_TIME_FORMATTER);
+        LocalDateTime arrival = LocalDateTime.parse(ticket.get("arrival_date") + " " + ticket.get("arrival_time"), DATE_TIME_FORMATTER);
         return (int) Duration.between(departure, arrival).toMinutes();
     }
 
